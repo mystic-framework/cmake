@@ -6,6 +6,7 @@ All notable changes to Mystic CMake will be documented here.
 
 ### Added
 
-- Banner CMake module.
-- Basic CMake options.
+- CMake Module: Coverage Tool
+- CMake Module: ASCII Banner
+- CMake Module: CMake Options
 - Project initialization.
