@@ -52,11 +52,13 @@ Add this to your root `CMakeLists.txt`:
 include(FetchContent)
 
 FetchContent_Declare(
-    mystic-cmake
+    mystic_cmake
     GIT_REPOSITORY https://github.com/thedevmystic/mystic-cmake.git
     GIT_TAG        main # or other tags
 )
-FetchContent_MakeAvailable(mystic-cmake)
+FetchContent_MakeAvailable(mystic_cmake)
+
+list(APPEND CMAKE_MODULE_PATH "${mystic_cmake_SOURCE_DIR}/modules")
 
 # Include desired modules
 include(mystic_ascii_banner)

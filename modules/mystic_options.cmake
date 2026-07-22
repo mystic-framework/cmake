@@ -16,9 +16,7 @@ option(MYSTIC_USE_SYSTEM      "Use system-installed libraries." OFF)
 option(MYSTIC_INTERNAL        "Whether this library is being built as part of a larger project." OFF)
 
 # Third Party Libraries Options
-# Catch2
 option(MYSTIC_USE_SYSTEM_CATCH2 "Use system-installed Catch2 v3." OFF)
-# IWYU
 option(MYSTIC_USE_IWYU "Use include-what-you-use (only supports system-installed)." OFF)
 
 # If MYSTIC_USE_SYSTEM is ON, then use system-installed libraries.
