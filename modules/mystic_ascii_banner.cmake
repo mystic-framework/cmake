@@ -50,6 +50,18 @@ list(APPEND ASCII_FONT_8 " █████╗ " "██╔══██╗" "╚�
 list(APPEND ASCII_FONT_9 " █████╗ " "██╔══██╗" "╚██████║" " ╚═══██║" " █████╔╝" " ╚════╝ ")
 
 # -------------------------------------------------------------------------------------------------
+# Color gradient definitions for ASCII art output
+# -------------------------------------------------------------------------------------------------
+string(ASCII 27 ESC)
+set(COLOR_RESET   "${ESC}[0m")
+set(COLOR_0 "${ESC}[38;5;196m") # Vivid Red
+set(COLOR_1 "${ESC}[38;5;202m") # Orange-Red
+set(COLOR_2 "${ESC}[38;5;208m") # Dark Orange
+set(COLOR_3 "${ESC}[38;5;214m") # Orange-Yellow
+set(COLOR_4 "${ESC}[38;5;220m") # Yellow
+set(COLOR_5 "${ESC}[38;5;226m") # Bright Yellow
+
+# -------------------------------------------------------------------------------------------------
 # Desc: Function to generate ASCII art for a given input string.
 # Note: This supports A-Z, 0-9, and space characters.
 # Args:
@@ -96,12 +108,12 @@ function(mystic_ascii_banner INPUT_STRING)
     endforeach()
 
     # Output the word block
-    message(NOTICE "${LINE_0}")
-    message(NOTICE "${LINE_1}")
-    message(NOTICE "${LINE_2}")
-    message(NOTICE "${LINE_3}")
-    message(NOTICE "${LINE_4}")
-    message(NOTICE "${LINE_5}")
+    message(NOTICE "${COLOR_0}${LINE_0}${COLOR_RESET}")
+    message(NOTICE "${COLOR_1}${LINE_1}${COLOR_RESET}")
+    message(NOTICE "${COLOR_2}${LINE_2}${COLOR_RESET}")
+    message(NOTICE "${COLOR_3}${LINE_3}${COLOR_RESET}")
+    message(NOTICE "${COLOR_4}${LINE_4}${COLOR_RESET}")
+    message(NOTICE "${COLOR_5}${LINE_5}${COLOR_RESET}")
     message(NOTICE "") # Line break between words
   endforeach()
 endfunction()
