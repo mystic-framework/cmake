@@ -9,6 +9,8 @@
 # mystic_import_module(module-name) # must be a valid module name in the framework.
 # -------------------------------------------------------------------------------------------------
 
+include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
+
 # -------------------------------------------------------------------------------------------------
 # List of valid modules in the framework.
 # -------------------------------------------------------------------------------------------------
@@ -46,7 +48,7 @@ function(mystic_import_module MODULE_NAME)
   # Find Git
   find_package(Git QUIET)
   if(NOT Git_FOUND)
-    message(FATAL_ERROR "[MYSTIC] - Error: Git was not found. Please install git.")
+    mystic_message(FATAL_ERROR "Error: Git was not found. Please install git.")
   endif()
 
   # Clone via Git
@@ -73,7 +75,7 @@ function(mystic_import_module MODULE_NAME)
 
   # Check for failure
   if(NOT _rc EQUAL 0)
-    message(FATAL_ERROR "[MYSTIC] - Failed to import ${MODULE_NAME}:\n${_err}")
+    mystic_message(FATAL_ERROR "Failed to import ${MODULE_NAME}:\n${_err}")
   endif()
 
   string(REPLACE "-" "_" MODULE_NAME_UNDERSCORE "${MODULE_NAME}")

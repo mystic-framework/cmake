@@ -6,6 +6,7 @@ All notable changes to Mystic CMake will be documented here.
 
 ### Added
 
+- CMake Module: Message Logging Helper
 - CMake Module: Modules Recursive Inclusion Helper
 - CMake Module: Module Importing Helper
 - CMake Module: Third Party Recursive Inclusion Helper

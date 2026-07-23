@@ -11,6 +11,8 @@
 # mystic_include_third_party(${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 # -------------------------------------------------------------------------------------------------
 
+include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
+
 # -------------------------------------------------------------------------------------------------
 # Desc: This function scans a specified root directory for third-party libraries and process them.
 # Args:
@@ -28,7 +30,7 @@ function(mystic_include_third_party)
   # Copies license to licenses directory in the build folder
   set(LICENSE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/licenses")
 
-  message(STATUS "[MYSTIC] - Scanning for third-party libraries...")
+  mystic_message(STATUS "Scanning for third-party libraries...")
 
   # Find all CMakeLists.txt files recursively in third_party
   file(GLOB_RECURSE CMAKE_FILES CONFIGURE_DEPENDS RELATIVE "${ROOT_DIR}" "${ROOT_DIR}/**/CMakeLists.txt")
@@ -45,10 +47,10 @@ function(mystic_include_third_party)
     set(FULL_SUB_DIR_PATH "${ROOT_DIR}/${SUB_DIR}")
     get_filename_component(DIR_NAME "${SUB_DIR}" NAME)
 
-    message(STATUS "[MYSTIC] - Processing third-party library: ${DIR_NAME}...")
+    mystic_message(STATUS "Processing third-party library: ${DIR_NAME}...")
     # Add the subdirectory to the build layout
     add_subdirectory("${FULL_SUB_DIR_PATH}" "${CMAKE_BINARY_DIR}/third_party/${DIR_NAME}")
-    message(STATUS "[MYSTIC] - Processed third-party library: ${FULL_SUB_DIR_PATH}")
+    mystic_message(STATUS "Processed third-party library: ${FULL_SUB_DIR_PATH}")
 
     # Find and copy the License file
     file(GLOB LICENSE_FILES 
@@ -57,14 +59,14 @@ function(mystic_include_third_party)
       "${FULL_SUB_DIR_PATH}/*COPYING*"
     )
 
-    message(STATUS "[MYSTIC] - Copying license files for ${DIR_NAME}...")
+    mystic_message(STATUS "Copying license files for ${DIR_NAME}...")
     foreach(LICENSE_FILE IN LISTS LICENSE_FILES)
         get_filename_component(LICENSE_FILENAME "${LICENSE_FILE}" NAME)
 
         # Copy the license file to the build directory immediately
         configure_file("${LICENSE_FILE}" "${LICENSE_OUTPUT_DIR}/${SUB_DIR}_${LICENSE_FILENAME}" COPYONLY)
     endforeach()
-    message(STATUS "[MYSTIC] - Copied license files for ${DIR_NAME}.")
+    mystic_message(STATUS "Copied license files for ${DIR_NAME}.")
   endforeach()
-  message(STATUS "[MYSTIC] - Finished processing all third-party libraries.")
+  mystic_message(STATUS "Finished processing all third-party libraries.")
 endfunction()

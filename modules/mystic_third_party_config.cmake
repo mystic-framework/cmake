@@ -11,6 +11,8 @@
 # mystic_third_party_config("my_lib" "v1.2.3" "https://github.com/username/repo.git")
 # -------------------------------------------------------------------------------------------------
 
+include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
+
 # -------------------------------------------------------------------------------------------------
 # Desc: Function to include a third party dependency in the project.
 # Args:
@@ -30,13 +32,13 @@ function(mystic_third_party_config LIB_NAME LIB_VER GIT_URL)
   # Check for system-installed if option is set
   string(TOUPPER "${LIB_NAME}" LIB_NAME_UPPER)
   if(MYSTIC_USE_SYSTEM_${LIB_NAME_UPPER})
-    message(STATUS "[MYSTIC] - Searching for system-installed ${LIB_NAME} ${LIB_VER}...")
+    mystic_message(STATUS "Searching for system-installed ${LIB_NAME} ${LIB_VER}...")
     find_package(${LIB_NAME} ${LIB_VER} REQUIRED)
-    message(STATUS "[MYSTIC] - System-installed ${LIB_NAME} ${LIB_VER} found.")
+    mystic_message(STATUS "System-installed ${LIB_NAME} ${LIB_VER} found.")
   else()
     # Fetch from Internet
     string(TOLOWER "${LIB_NAME}" LIB_NAME_LOWER)
-    message(STATUS "[MYSTIC] - Fetching ${LIB_NAME} ${LIB_VER}...")
+    mystic_message(STATUS "Fetching ${LIB_NAME} ${LIB_VER}...")
     include(FetchContent)
     FetchContent_Declare(
       ${LIB_NAME_LOWER}
@@ -44,7 +46,7 @@ function(mystic_third_party_config LIB_NAME LIB_VER GIT_URL)
         GIT_TAG        ${GIT_TAG}
     )
     FetchContent_MakeAvailable(${LIB_NAME_LOWER})
-    message(STATUS "[MYSTIC] - ${LIB_NAME} ${LIB_VER} fetched.")
+    mystic_message(STATUS "${LIB_NAME} ${LIB_VER} fetched.")
   endif()
 endfunction()
 

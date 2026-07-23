@@ -9,6 +9,8 @@
 # mystic_coverage(<main_target> <other_targets...>)
 # -------------------------------------------------------------------------------------------------
 
+include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
+
 function(mystic_coverage MAIN_TARGET)
   if(MYSTIC_ENABLE_COVERAGE)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
@@ -24,7 +26,7 @@ function(mystic_coverage MAIN_TARGET)
       endforeach()
 
     else()
-      message(WARNING "[MYSTIC] - Coverage is only supported in Clang and GCC. Disabling 'MYSTIC_ENABLE_COVERAGE'...")
+      mystic_message(WARNING "Coverage is only supported in Clang and GCC. Disabling 'MYSTIC_ENABLE_COVERAGE'...")
       set(MYSTIC_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
     endif()
   endif()

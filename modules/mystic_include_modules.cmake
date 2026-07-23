@@ -9,6 +9,8 @@
 # mystic_include_modules(${CMAKE_CURRENT_SOURCE_DIR}/modules)
 # -------------------------------------------------------------------------------------------------
 
+include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
+
 # -------------------------------------------------------------------------------------------------
 # Desc: This function scans a specified root directory for modules and process them.
 # Args:
@@ -23,7 +25,7 @@ function(mystic_include_modules)
     set(ROOT_DIR "${ARGV0}")
   endif()
 
-  message(STATUS "[MYSTIC] - Scanning for modules...")
+  mystic_message(STATUS "Scanning for modules...")
 
   # Find all CMakeLists.txt files recursively in modules
   file(GLOB_RECURSE CMAKE_FILES CONFIGURE_DEPENDS RELATIVE "${ROOT_DIR}" "${ROOT_DIR}/**/CMakeLists.txt")
@@ -43,5 +45,5 @@ function(mystic_include_modules)
     # Add the subdirectory to the build layout
     add_subdirectory("${FULL_SUB_DIR_PATH}" "${CMAKE_BINARY_DIR}/modules/${DIR_NAME}")
   endforeach()
-  message(STATUS "[MYSTIC] - Finished importing all modules.")
+  mystic_message(STATUS "Finished importing all modules.")
 endfunction()
