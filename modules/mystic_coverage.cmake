@@ -6,28 +6,60 @@
 # -------------------------------------------------------------------------------------------------
 # Usage:
 # include(path/to/mystic_coverage)
-# mystic_coverage(<main_target> <other_targets...>)
+# mystic_coverage(
+#  ENABLE <YOUR_COVERAGE_OPTION>
+#  TARGETS <target1> <target2> ...
+# )
 # -------------------------------------------------------------------------------------------------
 
 include("${CMAKE_CURRENT_LIST_DIR}/mystic_message.cmake")
 
-function(mystic_coverage MAIN_TARGET)
-  if(MYSTIC_ENABLE_COVERAGE)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+# -------------------------------------------------------------------------------------------------
+# Desc: Function to enable coverage conditionally.
+# Args:
+#   ENABLE: Whether enable it or not (provide your control option).
+#   TARGETS: The actual targets for coverage.
+# -------------------------------------------------------------------------------------------------
+function(mystic_coverage)
+  set(options "")
+  set(singleValueArgs ENABLE)
+  set(multiValueArgs TARGETS)
 
-      message(NOTICE "[MYSTIC] - Adding coverage flags to the following targets: ${MAIN_TARGET} ${ARGN}")
+  cmake_parse_arguments(
+    ARG
+    "${options}"
+    "${singleValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+  )
 
-      target_compile_options(${MAIN_TARGET} PUBLIC --coverage -O0 -g)
-      target_link_options(${MAIN_TARGET} PUBLIC --coverage)
+  if(ARG_UNPARSED_ARGUMENTS)
+    mystic_message(FATAL_ERROR "mystic_coverage received unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
+  endif()
 
-      foreach(target IN LISTS ARGN)
-        target_compile_options(${target} PRIVATE --coverage -O0 -g)
-        target_link_options(${target} PRIVATE --coverage)
-      endforeach()
-
-    else()
-      mystic_message(WARNING "Coverage is only supported in Clang and GCC. Disabling 'MYSTIC_ENABLE_COVERAGE'...")
-      set(MYSTIC_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
+  if(DEFINED ARG_ENABLE AND ARG_ENABLE)
+    # Guard against empty list
+    if(NOT ARG_TARGETS)
+      mystic_message(FATAL_ERROR "ENABLE was specified but TARGETS list is empty in mystic_coverage.")
     endif()
+
+    foreach(target IN LISTS ARG_TARGETS)
+      # Guard against invalid targets
+      if(NOT TARGET "${target}")
+        mystic_message(FATAL_ERROR "'${target}' provided in 'mystic_coverage' is not a valid CMake target.")
+      endif()
+
+      mystic_message(NOTICE "Adding coverage flags to the following targets: ${target}")
+      
+      if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+          target_compile_options(${target} PRIVATE -fprofile-instr-generate -fcoverage-mapping -O0 -g)
+          target_link_options(${target} PRIVATE -fprofile-instr-generate)
+      elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+          target_compile_options(${target} PRIVATE --coverage -O0 -g)
+          target_link_options(${target} PRIVATE --coverage)
+      else()
+        mystic_message(FATAL_ERROR "Coverage is only supported in Clang and GCC.")
+      endif()
+    endforeach()
   endif()
 endfunction()
