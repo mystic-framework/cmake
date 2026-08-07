@@ -50,6 +50,8 @@ function(mystic_import_module)
   if(NOT DEFINED ARG_MODULE_NAME)
     mystic_message(FATAL_ERROR "MODULE_NAME not defined in mystic_import_module.")
   endif()
+
+  set(MYSTIC_MESSAGE_ONLY_ERRORS ON CACHE BOOL "Only enable errors logging.")
   
   # Check if the module name is valid
   string(TOLOWER "${ARG_MODULE_NAME}" ARG_MODULE_NAME)
@@ -114,6 +116,8 @@ function(mystic_import_module)
     QUIET
   )
   FetchContent_MakeAvailable(${MODULE_NAME_UNDERSCORE})
+
+  set(MYSTIC_MESSAGE_ONLY_ERRORS OFF CACHE BOOL "Only enable errors logging.")
 
   message(NOTICE "[MYSTIC] - Imported module: ${ARG_MODULE_NAME}.")
 endfunction()
