@@ -45,6 +45,11 @@ function(mystic_import_module)
   if(ARG_UNPARSED_ARGUMENTS)
     mystic_message(FATAL_ERROR "mystic_import_module received unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
   endif()
+
+  # Validate args
+  if(NOT DEFINED ARG_MODULE_NAME)
+    mystic_message(FATAL_ERROR "MODULE_NAME not defined in mystic_import_module.")
+  endif()
   
   # Check if the module name is valid
   string(TOLOWER "${ARG_MODULE_NAME}" ARG_MODULE_NAME)
@@ -109,13 +114,12 @@ function(mystic_import_module)
     QUIET
   )
   FetchContent_MakeAvailable(${MODULE_NAME_UNDERSCORE})
-  set(MYSTIC_INTERNAL FALSE CACHE BOOL "" FORCE)
 
   message(NOTICE "[MYSTIC] - Imported module: ${ARG_MODULE_NAME}.")
 endfunction()
 
 # -------------------------------------------------------------------------------------------------
-# Desc: Prepares the module for internal importing (sets up options)
+# Desc: Prepares the module for internal importing (sets up default options)
 # Args:
 #   MODULE_NAME: The name of the module.
 #   USE_LTO: Whether to use LTO or not.
@@ -140,51 +144,52 @@ function(mystic_prepare_for_import)
     mystic_message(FATAL_ERROR "mystic_prepare_for_import received unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
   endif()
 
+  # Validate args
+  if(NOT DEFINED ARG_MODULE_NAME)
+    mystic_message(FATAL_ERROR "MODULE_NAME not defined in mystic_prepare_for_import.")
+  endif()
+
   # Convert module name to upper case with underscores (e.g., mystic-lib -> MYSTIC_LIB)
   string(REPLACE "-" "_" ARG_MODULE_NAME "${ARG_MODULE_NAME}")
   string(TOUPPER "${ARG_MODULE_NAME}" ARG_MODULE_NAME)
 
-  macro(_mystic_internal_prepare_for_import_helper _OPTION _VALUE _TYPE _DESC)
-    set(${ARG_MODULE_NAME}_${_OPTION} "${_VALUE}" CACHE ${_TYPE} "${_DESC}" FORCE)
-  endmacro()
-
   # Set default build configuration
-  _mystic_internal_prepare_for_import_helper("BUILD_TYPE" "${CMAKE_BUILD_TYPE}" "STRING" "Build type.")
-  _mystic_internal_prepare_for_import_helper("BUILD_SHARED_LIBS" "OFF" "BOOL" "Build shared libraries (static, if OFF).")
+  set(${ARG_MODULE_NAME}_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Build type.")
+  set(${ARG_MODULE_NAME}_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries (static, if OFF).")
 
-  # Disable standard options
-  _mystic_internal_prepare_for_import_helper("ENABLE_BENCHMARKS" "OFF" "BOOL" "Build benchmarks.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_COVERAGE"   "OFF" "BOOL" "Build code coverage.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_DOCS"       "OFF" "BOOL" "Build documentation.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_EXAMPLES"   "OFF" "BOOL" "Build example programs.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_LINT"       "OFF" "BOOL" "Enable static code analysis.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_PROFILER"   "OFF" "BOOL" "Enable profiling.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_SANITIZERS" "OFF" "BOOL" "Enable sanitizers.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_TESTING"    "OFF" "BOOL" "Build test suites.")
-  _mystic_internal_prepare_for_import_helper("ENABLE_WARNINGS"   "OFF" "BOOL" "Enable strict compiler warnings.")
-  _mystic_internal_prepare_for_import_helper("INSTALL"           "OFF" "BOOL" "Enable installation of the library.")
+  # Disable standard options by default
+  set(${ARG_MODULE_NAME}_ENABLE_BENCHMARKS OFF CACHE BOOL "Build benchmarks.")
+  set(${ARG_MODULE_NAME}_ENABLE_COVERAGE   OFF CACHE BOOL "Build code coverage.")
+  set(${ARG_MODULE_NAME}_ENABLE_DOCS       OFF CACHE BOOL "Build documentation.")
+  set(${ARG_MODULE_NAME}_ENABLE_EXAMPLES   OFF CACHE BOOL "Build example programs.")
+  set(${ARG_MODULE_NAME}_ENABLE_LINT       OFF CACHE BOOL "Enable static code analysis.")
+  set(${ARG_MODULE_NAME}_ENABLE_PROFILER   OFF CACHE BOOL "Enable profiling.")
+  set(${ARG_MODULE_NAME}_ENABLE_SANITIZERS OFF CACHE BOOL "Enable sanitizers.")
+  set(${ARG_MODULE_NAME}_ENABLE_TESTING    OFF CACHE BOOL "Build test suites.")
+  set(${ARG_MODULE_NAME}_ENABLE_WARNINGS   OFF CACHE BOOL "Enable strict compiler warnings.")
+  set(${ARG_MODULE_NAME}_INSTALL           OFF CACHE BOOL "Enable installation of the library.")
 
   # Enable LTO if ARG_USE_LTO
-  if(ARG_USE_LTO)
-    _mystic_internal_prepare_for_import_helper("ENABLE_LTO" "ON" "BOOL" "Enable Link Time Optimization.")
+  if(DEFINED ARG_USE_LTO AND ARG_USE_LTO)
+    set(${ARG_MODULE_NAME}_ENABLE_LTO ON CACHE BOOL "Enable Link Time Optimization.")
   else()
-    _mystic_internal_prepare_for_import_helper("ENABLE_LTO" "OFF" "BOOL" "Enable Link Time Optimization.")
+    set(${ARG_MODULE_NAME}_ENABLE_LTO OFF CACHE BOOL "Enable Link Time Optimization.")
   endif()
 
   # Enable NARCH if ARG_USE_NARCH
-  if(ARG_USE_NARCH)
-    _mystic_internal_prepare_for_import_helper("ENABLE_NARCH" "ON" "BOOL" "Enable host CPU optimization.")
+  if(DEFINED ARG_USE_NARCH AND ARG_USE_NARCH)
+    set(${ARG_MODULE_NAME}_ENABLE_NARCH ON CACHE BOOL "Enable host CPU optimization.")
   else()
-    _mystic_internal_prepare_for_import_helper("ENABLE_NARCH" "OFF" "BOOL" "Enable host CPU optimization.")
+    set(${ARG_MODULE_NAME}_ENABLE_NARCH OFF CACHE BOOL "Enable host CPU optimization.")
   endif()
 
   # Enable system libraries option if ARG_USE_SYSTEM
-  if(ARG_USE_SYSTEM)
-    _mystic_internal_prepare_for_import_helper("USE_SYSTEM" "ON" "BOOL" "Use system-installed libraries.")
+  if(DEFINED ARG_USE_SYSTEM AND ARG_USE_SYSTEM)
+    set(${ARG_MODULE_NAME}_USE_SYSTEM ON CACHE BOOL "Use system-installed libraries.")
   else()
-    _mystic_internal_prepare_for_import_helper("USE_SYSTEM" "OFF" "BOOL" "Use system-installed libraries.")
+    set(${ARG_MODULE_NAME}_USE_SYSTEM OFF CACHE BOOL "Use system-installed libraries.")
   endif()
 
   # Enable internal build flag
-  _mystic_internal_prepare_for_import_helper("INTERNAL" "ON" "BOOL" "Whether this library is being built as part of a larger project.")
+  set(${ARG_MODULE_NAME}_INTERNAL ON CACHE BOOL "Whether this library is being built as part of a larger project.")
 endfunction()
