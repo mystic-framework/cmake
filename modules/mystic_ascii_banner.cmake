@@ -69,6 +69,10 @@ set(_MYSTIC_COLOR_5 "${ESC}[38;5;226m") # Bright Yellow
 #   INPUT_STRING: The string to be converted into ASCII art.
 # -------------------------------------------------------------------------------------------------
 function(mystic_ascii_banner INPUT_STRING)
+  if(MYSTIC_ASCII_BANNER_DISABLE)
+    return()
+  endif()
+
   # Split space-separated input string into individual word tokens
   string(REPLACE " " ";" WORDS "${INPUT_STRING}")
 
