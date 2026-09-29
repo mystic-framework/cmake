@@ -97,6 +97,10 @@ function(mystic_enable_testing)
   # Set up the _MYSTIC_TEST_FRAMEWORK property for the project
   _mystic_setup_test_framework_property()
 
+  # Valid test frameworks to look for in the third-party directory (prioritize order):
+  # Catch2 (catch2) and Google Test (gtest)
+  set(VALID_TEST_FRAMEWORKS "catch2" "gtest")
+
   # Set test framework if specified and return
   # Valid options: catch2, gtest
   if(ARG_TEST_FRAMEWORK)
@@ -118,10 +122,6 @@ function(mystic_enable_testing)
   else()
     set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
   endif()
-
-  # Valid test frameworks to look for in the third-party directory (prioritize order):
-  # Catch2 (catch2) and Google Test (gtest)
-  set(VALID_TEST_FRAMEWORKS "catch2" "gtest")
 
   # Gather all subdirectories in the third-party directory
   file(GLOB THIRD_PARTY_SUBDIRS LIST_DIRECTORIES TRUE "${THIRD_PARTY_DIR}/*")
