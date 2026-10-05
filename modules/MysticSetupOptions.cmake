@@ -102,7 +102,7 @@ function(mystic_setup_feature_options)
 
   # Feature Toggles
   foreach(FEATURE IN LISTS ARGN)
-    _mystic_to_constant_case(FEATURE FEATURE_FORMATTED)
+    _mystic_to_constant_case(${FEATURE} FEATURE_FORMATTED)
     set(${PROJECT_PREFIX}_ENABLE_${FEATURE_FORMATTED} "OFF" CACHE BOOL "Enable ${FEATURE} feature.")
   endforeach()
 endfunction()
@@ -134,7 +134,7 @@ function(mystic_setup_third_party_options)
 
   # For each third-party library, create an option to use the system-installed version.
   foreach(LIB IN LISTS ARGN)
-    _mystic_to_constant_case(LIB LIB_FORMATTED)
+    _mystic_to_constant_case("${LIB}" LIB_FORMATTED)
     set(OPT_VAR "${PROJECT_PREFIX}_USE_SYSTEM_${LIB_FORMATTED}")
 
     # If the user flipped the master USE_SYSTEM switch, propagate it to all children
