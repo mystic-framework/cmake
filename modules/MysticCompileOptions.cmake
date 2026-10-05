@@ -189,7 +189,7 @@ function(_mystic_compile_options_impl TARGET_NAME)
 
   # Set up standard
   set_target_properties(${TARGET_NAME} PROPERTIES
-    CXX_STANDARD ${${PROJECT_PREFIX}_CXX_STANDARD}
+    CXX_STANDARD ${${PROJECT_PREFIX}_PROJECT_CXX_STANDARD}
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
   )

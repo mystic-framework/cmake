@@ -2,6 +2,13 @@
 
 All the notable changes in the project `mystic-framework/cmake` will be documented here.
 
+## [1.1.0] - [NONE]
+
+### Fixed
+
+- Undefined `VALID_TEST_FRAMEWORK` error in `MysticTest`.
+- Fixed CXX standard variable.
+
 ## [1.0.0] - 2026-09-26
 
 ### Added
