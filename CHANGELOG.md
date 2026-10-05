@@ -6,9 +6,10 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 
 ### Fixed
 
-- Undefined `VALID_TEST_FRAMEWORK` error in `MysticTest`.
+- Fixed undefined `VALID_TEST_FRAMEWORK` error in `MysticTest`.
 - Fixed CXX standard variable.
 - Fixed setup options variable expansion error.
+- Fixed Catch2 CMake helper modules path.
 
 ## [1.0.0] - 2026-09-26
 
