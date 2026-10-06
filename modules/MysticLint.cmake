@@ -66,6 +66,9 @@ function(_mystic_find_lint_binaries)
   if(NOT Python3_Interpreter_FOUND)
     mystic_message(WARNING "python3 not found. fine-grained deps disabled, falling back to coarse target-level deps.")
   endif()
+
+  set(Python3_Interpreter_FOUND "${Python3_Interpreter_FOUND}" PARENT_SCOPE)
+  set(Python3_EXECUTABLE "${Python3_EXECUTABLE}" PARENT_SCOPE)
 endfunction()
 
 # Sanitize paths
@@ -76,6 +79,8 @@ endfunction()
 
 # Creates format target
 function(_mystic_create_format_target TARGET_NAME FORMAT_ARGS)
+  separate_arguments(FORMAT_ARGS_LIST NATIVE_COMMAND "${FORMAT_ARGS}")
+
   # All files: Sources, headers, and modules.
   set(ALL_FILES "")
 
@@ -113,7 +118,7 @@ function(_mystic_create_format_target TARGET_NAME FORMAT_ARGS)
   set(ABS_FILES "")
   get_target_property(TARGET_DIR ${TARGET_NAME} SOURCE_DIR)
   foreach(FILE IN LISTS ALL_FILES)
-    cmake_path(ABSOLUTE_PATH FILE BASE_DIRECTORY ${TARGET_DIR} NORMALIZE)
+    cmake_path(ABSOLUTE_PATH FILE BASE_DIRECTORY "${TARGET_DIR}" NORMALIZE)
     list(APPEND ABS_FILES "${FILE}")
   endforeach()
 
@@ -122,7 +127,7 @@ function(_mystic_create_format_target TARGET_NAME FORMAT_ARGS)
 
   # Add a custom target for formatting the specific target
   add_custom_target("format_${TARGET_NAME}"
-    COMMAND ${CLANG_FORMAT_EXE} ${FORMAT_ARGS} ${ABS_FILES}
+    COMMAND ${CLANG_FORMAT_EXE} ${FORMAT_ARGS_LIST} ${ABS_FILES}
     COMMENT "Formatting target: ${TARGET_NAME}"
     VERBATIM
   )
@@ -138,6 +143,8 @@ endfunction()
 
 # Creates lint target
 function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
+  separate_arguments(TIDY_ARGS_LIST NATIVE_COMMAND "${TIDY_ARGS}")
+
   # Get source files
   get_target_property(SRC_FILES ${TARGET_NAME} SOURCES)
 
@@ -150,21 +157,21 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
   # Filter out generator expressions
   list(FILTER SRC_FILES EXCLUDE REGEX "\\$<")
 
+  # Deduplicate the list of files
+  list(REMOVE_DUPLICATES SRC_FILES)
+
   # Convert to absolute paths
   set(ABS_FILES "")
   set(REL_FILES "")
   get_target_property(TARGET_DIR ${TARGET_NAME} SOURCE_DIR)
   foreach(FILE IN LISTS SRC_FILES)
-    cmake_path(ABSOLUTE_PATH ABS_FILE BASE_DIRECTORY ${TARGET_DIR} NORMALIZE)
+    cmake_path(ABSOLUTE_PATH FILE BASE_DIRECTORY "${TARGET_DIR}" NORMALIZE OUTPUT_VARIABLE ABS_FILE)
     file(RELATIVE_PATH REL_FILE "${TARGET_DIR}" "${ABS_FILE}")
     list(APPEND ABS_FILES "${ABS_FILE}")
     list(APPEND REL_FILES "${REL_FILE}")
   endforeach()
 
-  # Deduplicate the list of files
-  list(REMOVE_DUPLICATES ABS_FILES)
-
-  # Phase 1: Regenrate raw P1689 scans
+  # Phase 1: Regenerate raw P1689 scans
   set(SCAN_DEPS_JSON "${CMAKE_BINARY_DIR}/module_deps_${TARGET_NAME}.json")
 
   # If clang-scan-deps is available, generate a P1689 scan for the target.
@@ -201,7 +208,7 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
               ${CMAKE_CURRENT_LIST_DIR}/scripts/gen_tidy_deps.py
               ${SCAN_DEPS_JSON} ${TIDY_DEPS_CMAKE}
               --target ${TARGET_NAME}
-      DEPENDS "${SCAN_DEPS_JSON}" ${CMAKE_CURRENT_LIST_DIR}/scripts/generate_tidy_deps.py
+      DEPENDS "${SCAN_DEPS_JSON}" ${CMAKE_CURRENT_LIST_DIR}/scripts/gen_tidy_deps.py
       COMMENT "Generating tidy deps CMake file for target: ${TARGET_NAME}"
       VERBATIM
     )
@@ -263,13 +270,13 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
       # Tidy command
       add_custom_command(
         OUTPUT ${STAMP}
-        COMMAND ${CLANG_TIDY_EXE} -p ${CMAKE_BINARY_DIR} ${ABS_FILE} ${TIDY_ARGS}
+        COMMAND ${CLANG_TIDY_EXE} -p ${CMAKE_BINARY_DIR} ${ABS_FILE} ${TIDY_ARGS_LIST}
         COMMAND ${CMAKE_COMMAND} -E touch ${STAMP}
         # It depends on:
         # ABS_FILE: The file itself.
         # TIDY_DEPS_CMAKE: The CMake file laying out dependencies
         # EXTRA_DEPS: If any dependency of this file changes it should propagate.
-        # TARGET_NAME: The target itself (so, its BMIs are built correctlt).
+        # TARGET_NAME: The target itself (so, its BMIs are built correctly).
         DEPENDS ${ABS_FILE} ${TIDY_DEPS_CMAKE} ${EXTRA_DEPS} ${TARGET_NAME}
         COMMENT "Running clang-tidy on ${ABS_FILE} for target: ${TARGET_NAME}"
         VERBATIM
@@ -321,7 +328,7 @@ function(_mystic_lint_impl TARGET_NAME FORMAT_ARGS TIDY_ARGS DISABLE_FORMAT DISA
     mystic_message(FATAL_ERROR "'${TARGET_NAME}' provided in 'mystic_lint' is not a valid CMake target.")
   endif()
 
-  if (NOT CLANG_FORMAT_EXE AND NOT CLANG_TIDY_EXE)
+  if(NOT CLANG_FORMAT_EXE AND NOT CLANG_TIDY_EXE)
     mystic_message(WARNING "Neither clang-format nor clang-tidy found. Skipping lint setup for target: ${TARGET_NAME}.")
     return()
   endif()
@@ -368,11 +375,6 @@ function(mystic_lint)
     return()
   endif()
 
-  # Guard against empty argument list
-  if(NOT ARGN)
-    mystic_message(FATAL_ERROR "mystic_lint requires at least one target name.")
-  endif()
-
   set(options "DISABLE_FORMAT" "DISABLE_TIDY")
   set(oneValueArgs "FORMAT_ARGS" "TIDY_ARGS")
   set(multiValueArgs "")
@@ -385,8 +387,13 @@ function(mystic_lint)
     ${ARGN}
   )
 
-  if(ARG_UNPARSED_ARGUMENTS)
-    mystic_message(FATAL_ERROR "mystic_lint received unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
+  # All unparsed argument is a target name
+  set(LINT_TARGETS ${ARG_UNPARSED_ARGUMENTS})
+
+  # Guard against empty argument list
+  if(NOT LINT_TARGETS)
+    mystic_message(FATAL_ERROR "mystic_lint requires at least one target name.")
+  endif()
 
   # Set default values for optional arguments if not provided
   if(NOT ARG_FORMAT_ARGS)
@@ -400,7 +407,7 @@ function(mystic_lint)
   _mystic_find_lint_binaries()
 
   # Iterate over each target provided in the arguments
-  foreach(target IN LISTS ARGN)
+  foreach(target IN LISTS LINT_TARGETS)
     _mystic_lint_impl(${target} "${ARG_FORMAT_ARGS}" "${ARG_TIDY_ARGS}" "${ARG_DISABLE_FORMAT}" "${ARG_DISABLE_TIDY}")
   endforeach()
 endfunction()
