@@ -16,6 +16,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 - Fixed Catch2 CMake helper modules path in `MysticTest`.
 - Fixed multiple errors in `MysticLint`.
 - Fixed scoping issues in `MysticProject`.
+- Fixed scoping issue in `MysticThirdPartyConfig`.
 
 ## [1.0.0] - 2026-09-26
 

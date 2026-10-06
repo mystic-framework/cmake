@@ -95,9 +95,9 @@ function(mystic_third_party_config NAME)
 
     # When VERSION is provided use it
     if(ARG_VERSION)
-      find_package(${NAME} ${ARG_VERSION} QUIET)
+      find_package(${NAME} ${ARG_VERSION} QUIET GLOBAL)
     else()
-      find_package(${NAME} QUIET)
+      find_package(${NAME} QUIET GLOBAL)
     endif()
 
     # Check if it found, otherwise fallback to FetchContent
