@@ -194,6 +194,9 @@ function(_mystic_compile_options_impl TARGET_NAME)
     CXX_EXTENSIONS OFF
   )
 
+  # C++ Modules need explicit linking to cxx_std_[20,23,...]
+  target_compile_features(${TARGET_NAME} PRIVATE cxx_std_${CMAKE_CXX_STANDARD})
+
   # Set up build type-specific compile options
   _mystic_add_build_options(${TARGET_NAME})
 

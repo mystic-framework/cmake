@@ -4,6 +4,10 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 
 ## [1.1.0] - [NONE]
 
+### Added
+
+- `cxx_std_X` flag in `MysticCompileOptions`.
+
 ### Fixed
 
 - Fixed undefined `VALID_TEST_FRAMEWORK` error in `MysticTest`.
