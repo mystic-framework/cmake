@@ -210,9 +210,9 @@ function(mystic_project)
 
   # Set the C++ standard version if specified in the project.json file
   if(${_MYSTIC_PROJECT_PREFIX}_PROJECT_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD "${${_MYSTIC_PROJECT_PREFIX}_PROJECT_CXX_STANDARD}")
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_CXX_STANDARD "${${_MYSTIC_PROJECT_PREFIX}_PROJECT_CXX_STANDARD}" PARENT_SCOPE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)
+    set(CMAKE_CXX_EXTENSIONS OFF PARENT_SCOPE)
   endif()
 
   # Set the project command arguments as a cache variable for use in the project() command

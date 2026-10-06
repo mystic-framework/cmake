@@ -15,6 +15,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 - Fixed setup options variable expansion error in `MysticSetupOptions`.
 - Fixed Catch2 CMake helper modules path in `MysticTest`.
 - Fixed multiple errors in `MysticLint`.
+- Fixed scoping issues in `MysticProject`.
 
 ## [1.0.0] - 2026-09-26
 
