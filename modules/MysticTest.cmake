@@ -36,6 +36,7 @@
 # --------------------------------------------------------------------------------------------------
 
 include(CTest)
+include(FetchContent)
 include("${CMAKE_CURRENT_LIST_DIR}/MysticMessage.cmake")
 
 # This function sets up _MYSTIC_TEST_FRAMEWORK property for the project.
@@ -217,10 +218,13 @@ function(mystic_test TARGET)
 
   # Discover the test executable for CTest
   if(TEST_FRAMEWORK STREQUAL "catch2")
-    if(DEFINED catch2_SOURCE_DIR)
-      list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-    elseif(DEFINED Catch2_DIR)
-      list(APPEND CMAKE_MODULE_PATH ${Catch2_DIR})
+    FetchContent_GetProperties(catch2 SOURCE_DIR _MYSTIC_CATCH2_SRC)
+    if(_MYSTIC_CATCH2_SRC)
+      list(APPEND CMAKE_MODULE_PATH "${_MYSTIC_CATCH2_SRC}/extras")
+    elseif(Catch2_DIR)
+      list(APPEND CMAKE_MODULE_PATH "${Catch2_DIR}")
+    else()
+      mystic_message(FATAL_ERROR "Catch2 CMake modules not found (neither fetched nor system-installed).")
     endif()
     include(Catch)
     catch_discover_tests(${TARGET})
