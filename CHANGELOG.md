@@ -17,6 +17,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 - Fixed multiple errors in `MysticLint`.
 - Fixed scoping issues in `MysticProject`.
 - Fixed scoping issue in `MysticThirdPartyConfig`.
+- Fixed incorrect job name in pre-commit action.
 
 ## [1.0.0] - 2026-09-26
 
