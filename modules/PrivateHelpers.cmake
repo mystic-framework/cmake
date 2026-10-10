@@ -34,3 +34,10 @@ function(_mystic_capitalize_first_letter VARIABLE_NAME OUTPUT_VARIABLE)
   string(TOUPPER "${FIRST_LETTER}" FIRST_LETTER_UPPER)
   set(${OUTPUT_VARIABLE} "${FIRST_LETTER_UPPER}${REMAINDER}" PARENT_SCOPE)
 endfunction()
+
+# This function generates a random alphanumeric string of a specified length.
+function(_mystic_generate_random_string LENGTH OUTPUT_VARIABLE)
+  set(CHARACTERS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+  string(RANDOM LENGTH ${LENGTH} ALPHABET ${CHARACTERS} RANDOM_STRING)
+  set(${OUTPUT_VARIABLE} "${RANDOM_STRING}" PARENT_SCOPE)
+endfunction()

@@ -6,6 +6,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 
 ### Added
 
+- `MysticVersion`: Exposes version information as an header file for Version library to read.
 - `cxx_std_X` flag in `MysticCompileOptions`.
 
 ### Fixed
