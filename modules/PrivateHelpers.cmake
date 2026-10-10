@@ -37,7 +37,7 @@ endfunction()
 
 # This function generates a random alphanumeric string of a specified length.
 function(_mystic_generate_random_string LENGTH OUTPUT_VARIABLE)
-  set(CHARACTERS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+  set(CHARACTERS "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   string(RANDOM LENGTH ${LENGTH} ALPHABET ${CHARACTERS} RANDOM_STRING)
   set(${OUTPUT_VARIABLE} "${RANDOM_STRING}" PARENT_SCOPE)
 endfunction()
