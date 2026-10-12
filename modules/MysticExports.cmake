@@ -91,7 +91,7 @@ function(mystic_exports)
   )
 
   # Every unparsed argument is considered a target name
-  set(TARGETS ${ARGN})
+  set(TARGETS ${ARG_UNPARSED_ARGUMENTS})
 
   # Set default macro name if not provided
   if(NOT ARG_MACRO_NAME)
