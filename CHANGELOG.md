@@ -7,6 +7,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 ### Added
 
 - `MysticVersion`: Exposes version information as an header file for Version library to read.
+- `MysticExports`: Export control helper for libraries.
 - `cxx_std_X` flag in `MysticCompileOptions`.
 
 ### Fixed
@@ -20,6 +21,7 @@ All the notable changes in the project `mystic-framework/cmake` will be document
 - Fixed scoping issue in `MysticThirdPartyConfig`.
 - Fixed incorrect job name in pre-commit action.
 - Fixed DLL errors on windows in `MysticTest`.
+- Fixed `MysticTest` not respecting control options.
 
 ## [1.0.0] - 2026-09-26
 

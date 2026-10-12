@@ -167,6 +167,12 @@ function(mystic_test TARGET)
   # Get the test framework from the directory property
   get_property(TEST_FRAMEWORK DIRECTORY PROPERTY _${PROJECT_PREFIX}_TEST_FRAMEWORK)
 
+  # If tests are not enabled, skip adding the test targets.
+  if (NOT ${PROJECT_PREFIX}_ENABLE_TESTING)
+    mystic_message(STATUS "Tests are disabled for the ${PROJECT_PREFIX} project. Skipping test target ${TARGET}.")
+    return()
+  endif()
+
   if(NOT TEST_FRAMEWORK)
     mystic_message(FATAL_ERROR "Test framework not set. Please call mystic_enable_testing() before adding test targets.")
   endif()

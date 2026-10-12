@@ -74,6 +74,9 @@ function(mystic_setup_options)
   option(${PROJECT_PREFIX}_ENABLE_TESTING    "Build test suites."               ON)
   option(${PROJECT_PREFIX}_ENABLE_WARNINGS   "Enable strict compiler warnings." OFF)
 
+  # Export Control
+  option(${PROJECT_PREFIX}_EXPORTS "Enable exporting of the library symbols." ON)
+
   # Sanitizer Type
   # Valid Options: Address, Undefined, Thread, Memory
   set(${PROJECT_PREFIX}_SANITIZER_TYPE "Address" CACHE STRING "Sanitizer")
