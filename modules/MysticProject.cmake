@@ -36,6 +36,7 @@
 # Valid example of project.json file:
 # --------------------------------------------------------------------------------------------------
 # {
+#   "$schema": "https://mystic-framework.github.io/schema/project.json",
 #   "name": "MyProject",
 #   "version": "3.4.5",
 #   "description": "This is a sample project.",
@@ -46,6 +47,7 @@
 # }
 # --------------------------------------------------------------------------------------------------
 # Here:
+# - "$schema" is the URL to the JSON schema for validation. (Optional)
 # - "name" is the name of the project. (Required)
 # - "version" is the version of the project. (Optional)
 # - "description" is a brief description of the project. (Optional)
