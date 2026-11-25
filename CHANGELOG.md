@@ -2,7 +2,7 @@
 
 All the notable changes in the project `mystic-framework/cmake` will be documented here.
 
-## [1.1.0] - [NONE]
+## [1.1.0] - 2026-11-25
 
 ### Added
 
