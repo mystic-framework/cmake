@@ -117,6 +117,11 @@ function(mystic_project)
     set(PROJECT_JSON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/project.json")
   endif()
 
+  # Check if the project.json file exists
+  if(NOT EXISTS "${PROJECT_JSON_PATH}")
+    mystic_message(FATAL_ERROR "project.json file not found at ${PROJECT_JSON_PATH}. Please ensure the file exists.")
+  endif()
+
   # Find Python interpreter
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
