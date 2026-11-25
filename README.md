@@ -29,8 +29,8 @@
     alt="License: Apache 2.0"
   />
   <img
-    src="https://img.shields.io/badge/Ver_1.0.0-007acc?style=flat"
-    alt="Version: 1.0.0"
+    src="https://img.shields.io/badge/Ver_1.1.0-007acc?style=flat"
+    alt="Version: 1.1.0"
   />
 </p>
 
