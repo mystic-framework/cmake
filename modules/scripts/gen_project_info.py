@@ -2,7 +2,7 @@
 """
 gen_project_info.py
 
-Reads project.json (or equivalent file) and emits project_info.cmake
+Reads project.json (or equivalent file) and emits MysticProjectInfo.cmake
 with project metadata extracted from it.
 
 Project metadata includes:

@@ -122,7 +122,7 @@ function(mystic_project)
 
   # Run the Python script to read the project.json file and extract the project metadata.
   execute_process(
-    COMMAND "${Python3_EXECUTABLE}" "${_MYSTIC_CURRENT_DIR}/scripts/gen_project_info.py" "${PROJECT_JSON_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/project_info.cmake"
+    COMMAND "${Python3_EXECUTABLE}" "${_MYSTIC_CURRENT_DIR}/scripts/gen_project_info.py" "${PROJECT_JSON_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/MysticProjectInfo.cmake"
     RESULT_VARIABLE _MYSTIC_PROJECT_PYTHON_RESULT
   )
   if (NOT _MYSTIC_PROJECT_PYTHON_RESULT EQUAL 0)
@@ -132,8 +132,8 @@ function(mystic_project)
   # Add project.json as a dependency
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PROJECT_JSON_PATH}")
 
-  # Include the generated project_info.cmake file to set the project variables.
-  include("${CMAKE_CURRENT_BINARY_DIR}/project_info.cmake")
+  # Include the generated MysticProjectInfo.cmake file to set the project variables.
+  include("${CMAKE_CURRENT_BINARY_DIR}/MysticProjectInfo.cmake")
 
   # Set the _MYSTIC_PROJECT_PREFIX directory property to the constant-case form of the project name.
   set_property(DIRECTORY PROPERTY _MYSTIC_PROJECT_PREFIX "${_MYSTIC_CURRENT_PROJECT_PREFIX}")
