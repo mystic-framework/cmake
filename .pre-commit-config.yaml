@@ -20,6 +20,14 @@ repos:
       - id: trailing-whitespace
       - id: fix-byte-order-marker
 
+  # Python Linter & Formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.6
+    hooks:
+      - id: ruff-check
+        args: ["--fix"]
+      - id: ruff-format
+
   # CI/CD Hooks
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.36.1
