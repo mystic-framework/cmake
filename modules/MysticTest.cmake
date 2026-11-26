@@ -138,6 +138,7 @@ function(mystic_enable_testing)
         mystic_message(FATAL_ERROR "Error reading project.json: ${JSON_ERROR}")
       endif()
 
+      string(TOLOWER "${THIRD_PARTY_LIB}" THIRD_PARTY_LIB)
       if(THIRD_PARTY_LIB IN_LIST VALID_TEST_FRAMEWORKS)
         set_property(DIRECTORY PROPERTY _${PROJECT_PREFIX}_TEST_FRAMEWORK "${THIRD_PARTY_LIB}")
         mystic_message(STATUS "Using auto-detected test framework: ${THIRD_PARTY_LIB}.")
@@ -146,7 +147,7 @@ function(mystic_enable_testing)
     endforeach()
   endif()
 
-  mystic_message(FATAL_ERROR "No valid test framework found in project.json dependencies."
+  mystic_message(FATAL_ERROR "No valid test framework found in project.json dependencies. "
                              "Please specify a test framework using the TEST_FRAMEWORK argument.")
 endfunction()
 
