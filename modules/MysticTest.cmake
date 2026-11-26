@@ -65,6 +65,7 @@ endfunction()
 #   TEST_FRAMEWORK: Optional argument to specify the testing framework to use (e.g., "gtest",
 #                   "catch2"). When not specified, it scans project.json's "dependencies.third_party"
 #                   for available testing frameworks and uses the first one found.
+#   JSON_PATH: Path to project metadata file (Optional, default: "project.json").
 # --------------------------------------------------------------------------------------------------
 function(mystic_enable_testing)
   # Enable testing for the project
@@ -78,7 +79,7 @@ function(mystic_enable_testing)
   endif()
 
   set(options "")
-  set(oneValueArgs "TEST_FRAMEWORK")
+  set(oneValueArgs "TEST_FRAMEWORK" "JSON_PATH")
   set(multiValueArgs "")
 
   cmake_parse_arguments(
@@ -116,7 +117,34 @@ function(mystic_enable_testing)
   endif()
 
   # Read the project.json file to determine the test framework if not specified
-  set(PROJECT_JSON_PATH "${CMAKE_CURRENT_LIST_DIR}/project.json")
+  if(ARG_JSON_PATH)
+    set(PROJECT_JSON_PATH "${ARG_JSON_PATH}")
+  else()
+    set(PROJECT_JSON_PATH "${CMAKE_CURRENT_LIST_DIR}/project.json")
+  endif()
+  file(READ "${PROJECT_JSON_PATH}" PROJECT_JSON_CONTENT)
+
+  # Get length of dependencies.third_party
+  string(JSON THIRD_PARTY_LIBS_COUNT LENGTH "${PROJECT_JSON_CONTENT}" "dependencies" "third_party")
+  if(THIRD_PARTY_LIBS_COUNT GREATER 0)
+    math(EXPR LAST_INDEX "${THIRD_PARTY_LIBS_COUNT} - 1")
+    foreach(INDEX RANGE 0 ${LAST_INDEX})
+      string(JSON THIRD_PARTY_LIB GET "${PROJECT_JSON_CONTENT}" "dependencies" "third_party" ${INDEX} "name" ERROR_VARIABLE JSON_ERROR)
+
+      if(JSON_ERROR)
+        mystic_message(FATAL_ERROR "Error reading project.json: ${JSON_ERROR}")
+      endif()
+
+      if(THIRD_PARTY_LIB IN_LIST VALID_TEST_FRAMEWORKS)
+        set_property(DIRECTORY PROPERTY _${PROJECT_PREFIX}_TEST_FRAMEWORK "${THIRD_PARTY_LIB}")
+        mystic_message(STATUS "Using auto-detected test framework: ${THIRD_PARTY_LIB}.")
+        return()
+      endif()
+    endforeach()
+  endif()
+
+  mystic_message(FATAL_ERROR "No valid test framework found in project.json dependencies."
+                             "Please specify a test framework using the TEST_FRAMEWORK argument.")
 endfunction()
 
 # --------------------------------------------------------------------------------------------------
