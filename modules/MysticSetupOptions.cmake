@@ -114,10 +114,29 @@ endfunction()
 # Function: mystic_setup_third_party_options
 # Description: This function sets up the options for third-party libraries used in a project
 # automatically using dependency information in project.json file.
+# Args:
+#   JSON_PATH: Path to the project metadata file (Optional, defaults to
+#   ${CMAKE_CURRENT_SOURCE_DIR}/project.json)
 # --------------------------------------------------------------------------------------------------
 function(mystic_setup_third_party_options)
   # Get project prefix
   get_property(PROJECT_PREFIX DIRECTORY PROPERTY _MYSTIC_PROJECT_PREFIX)
+
+  set(options "")
+  set(singleValueArgs "JSON_PATH")
+  set(multiValueArgs "")
+
+  cmake_parse_arguments(
+    ARG
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+  )
+
+  if(ARG_UNPARSED_ARGUMENTS)
+    mystic_message(FATAL_ERROR "mystic_setup_third_party_options received unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
+  endif()
 
   if(NOT PROJECT_PREFIX)
     mystic_message(FATAL_ERROR "Project prefix not set. Ensure that 'mystic_project' is called before 'mystic_setup_third_party_options'.")
@@ -127,7 +146,12 @@ function(mystic_setup_third_party_options)
   option(${PROJECT_PREFIX}_USE_SYSTEM "Use system-installed third-party libraries." OFF)
 
   # Read the project.json file to get the list of third-party libraries.
-  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/project.json" PROJECT_JSON_CONTENT)
+  if(ARG_JSON_PATH)
+    set(PROJECT_JSON_PATH "${ARG_JSON_PATH}")
+  else()
+    set(PROJECT_JSON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/project.json")
+  endif()
+  file(READ "${PROJECT_JSON_PATH}" PROJECT_JSON_CONTENT)
 
   # Check if the master toggle changed since the last CMake configure run
   set(PREV_STATE_VAR "_${PROJECT_PREFIX}_USE_SYSTEM_PREV")

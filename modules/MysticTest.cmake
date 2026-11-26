@@ -63,10 +63,8 @@ endfunction()
 # CMakeLists.txt.
 # Args:
 #   TEST_FRAMEWORK: Optional argument to specify the testing framework to use (e.g., "gtest",
-#                   "catch2"). When not specified, it scans "third_party" for available testing
-#                   frameworks and uses the first one found.
-#   THIRD_PARTY_DIR: Optional argument to specify the directory where third-party libraries are
-#                    located. Defaults to "${CMAKE_CURRENT_SOURCE_DIR}/third_party".
+#                   "catch2"). When not specified, it scans project.json's "dependencies.third_party"
+#                   for available testing frameworks and uses the first one found.
 # --------------------------------------------------------------------------------------------------
 function(mystic_enable_testing)
   # Enable testing for the project
@@ -80,7 +78,7 @@ function(mystic_enable_testing)
   endif()
 
   set(options "")
-  set(oneValueArgs "TEST_FRAMEWORK" "THIRD_PARTY_DIR")
+  set(oneValueArgs "TEST_FRAMEWORK")
   set(multiValueArgs "")
 
   cmake_parse_arguments(
@@ -98,7 +96,7 @@ function(mystic_enable_testing)
   # Set up the _MYSTIC_TEST_FRAMEWORK property for the project
   _mystic_setup_test_framework_property()
 
-  # Valid test frameworks to look for in the third-party directory (prioritize order):
+  # Valid test frameworks to look for in dependencies.third_party array
   # Catch2 (catch2) and Google Test (gtest)
   set(VALID_TEST_FRAMEWORKS "catch2" "gtest")
 
@@ -117,30 +115,8 @@ function(mystic_enable_testing)
     return()
   endif()
 
-  # Set third-party directory if specified, otherwise use default
-  if(ARG_THIRD_PARTY_DIR)
-    set(THIRD_PARTY_DIR "${ARG_THIRD_PARTY_DIR}")
-  else()
-    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
-  endif()
-
-  # Gather all subdirectories in the third-party directory
-  file(GLOB THIRD_PARTY_SUBDIRS LIST_DIRECTORIES TRUE "${THIRD_PARTY_DIR}/*")
-
-  # Scan for available test frameworks in the third-party directory
-  foreach(FRAMEWORK ${VALID_TEST_FRAMEWORKS})
-    foreach(SUBDIR ${THIRD_PARTY_SUBDIRS})
-      if(IS_DIRECTORY "${SUBDIR}")
-        get_filename_component(SUBDIR_NAME "${SUBDIR}" NAME)
-        string(TOLOWER "${SUBDIR_NAME}" SUBDIR_NAME_LOWER)
-        if(SUBDIR_NAME_LOWER STREQUAL "${FRAMEWORK}")
-          set_property(DIRECTORY PROPERTY _${PROJECT_PREFIX}_TEST_FRAMEWORK "${FRAMEWORK}")
-          mystic_message(STATUS "Using auto-detected test framework: ${FRAMEWORK}.")
-          break()
-        endif()
-      endif()
-    endforeach()
-  endforeach()
+  # Read the project.json file to determine the test framework if not specified
+  set(PROJECT_JSON_PATH "${CMAKE_CURRENT_LIST_DIR}/project.json")
 endfunction()
 
 # --------------------------------------------------------------------------------------------------
