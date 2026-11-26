@@ -231,9 +231,6 @@ function(mystic_generate_dependencies)
     mystic_message(FATAL_ERROR "Failed to generate MysticDependencyInfo.cmake from project.json at ${PROJECT_JSON_PATH}. Ensure the file exists and is valid JSON.")
   endif()
 
-  # Add project.json as a dependency, if not already added by mystic_project.
-  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PROJECT_JSON_PATH}")
-
   mystic_message(STATUS "Starting to import dependencies...")
   # Include the generated MysticDependencyInfo.cmake file to import the dependencies.
   include("${CMAKE_CURRENT_BINARY_DIR}/MysticDependencyInfo.cmake")
