@@ -112,9 +112,8 @@ endfunction()
 
 # --------------------------------------------------------------------------------------------------
 # Function: mystic_setup_third_party_options
-# Description: This function sets up the options for third-party libraries used in a project.
-# Args:
-#   ...: List of third-party library names to create options for.
+# Description: This function sets up the options for third-party libraries used in a project
+# automatically using dependency information in project.json file.
 # --------------------------------------------------------------------------------------------------
 function(mystic_setup_third_party_options)
   # Get project prefix
@@ -127,6 +126,9 @@ function(mystic_setup_third_party_options)
   # Toggles for third-party libraries to use system-installed versions.
   option(${PROJECT_PREFIX}_USE_SYSTEM "Use system-installed third-party libraries." OFF)
 
+  # Read the project.json file to get the list of third-party libraries.
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/project.json" PROJECT_JSON_CONTENT)
+
   # Check if the master toggle changed since the last CMake configure run
   set(PREV_STATE_VAR "_${PROJECT_PREFIX}_USE_SYSTEM_PREV")
   set(MASTER_CHANGED FALSE)
@@ -136,15 +138,28 @@ function(mystic_setup_third_party_options)
   endif()
 
   # For each third-party library, create an option to use the system-installed version.
-  foreach(LIB IN LISTS ARGN)
-    _mystic_to_constant_case("${LIB}" LIB_FORMATTED)
-    set(OPT_VAR "${PROJECT_PREFIX}_USE_SYSTEM_${LIB_FORMATTED}")
+  string(JSON THIRD_PARTY_LIBS_COUNT LENGTH "${PROJECT_JSON_CONTENT}" "dependencies" "third_party")
+  if(THIRD_PARTY_LIBS_COUNT GREATER 0)
+    math(EXPR LAST_INDEX "${THIRD_PARTY_LIBS_COUNT} - 1")
+    foreach(INDEX RANGE 0 ${LAST_INDEX})
+      # Get the library name from the project.json file
+      # dependencies.third_party[N].name
+      string(JSON THIRD_PARTY_LIB GET "${PROJECT_JSON_CONTENT}" "dependencies" "third_party" ${INDEX} "name" ERROR_VARIABLE JSON_ERROR)
 
-    # If the user flipped the master USE_SYSTEM switch, propagate it to all children
-    if(MASTER_CHANGED)
-      set(${OPT_VAR} ${${PROJECT_PREFIX}_USE_SYSTEM} CACHE BOOL "Use system installed ${LIB}." FORCE)
-    else()
-      option(${OPT_VAR} "Use system installed ${LIB}." OFF)
-    endif()
-  endforeach()
+      if(JSON_ERROR)
+        mystic_message(FATAL_ERROR "Error reading project.json: ${JSON_ERROR}")
+      endif()
+
+      # Format the library name to a constant case for the option variable
+      _mystic_to_constant_case("${THIRD_PARTY_LIB}" LIB_FORMATTED)
+      set(OPT_VAR "${PROJECT_PREFIX}_USE_SYSTEM_${LIB_FORMATTED}")
+
+      # If the user flipped the master USE_SYSTEM switch, propagate it to all children
+      if(MASTER_CHANGED)
+        set(${OPT_VAR} ${${PROJECT_PREFIX}_USE_SYSTEM} CACHE BOOL "Use system installed ${LIB}." FORCE)
+      else()
+        option(${OPT_VAR} "Use system installed ${LIB}." OFF)
+      endif()
+    endforeach()
+  endif()
 endfunction()
