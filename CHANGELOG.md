@@ -2,6 +2,20 @@
 
 All the notable changes in the project `mystic-framework/cmake` will be documented here.
 
+## [1.2.0] - 2026-11-26
+
+### Added
+
+- `MysticDependency`: Centralizes dependency management into project.json file.
+
+### Changed
+
+- `MysticProject`: Offloaded JSON parsing to Python script.
+
+### Removed
+
+- `MysticImportModule`, `MysticIncludeModules`, `MysticThirdPartyConfig`, `MysticIncludeThirdParty`
+
 ## [1.1.0] - 2026-11-25
 
 ### Added
