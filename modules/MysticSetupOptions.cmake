@@ -162,13 +162,16 @@ function(mystic_setup_third_party_options)
   endif()
 
   # For each third-party library, create an option to use the system-installed version.
-  string(JSON THIRD_PARTY_LIBS_COUNT LENGTH "${PROJECT_JSON_CONTENT}" "dependencies" "third_party")
+  string(JSON THIRD_PARTY_LIBS_COUNT ERROR_VARIABLE JSON_ERROR LENGTH "${PROJECT_JSON_CONTENT}" "dependencies" "third_party")
+  if(JSON_ERROR)
+    mystic_message(FATAL_ERROR "Error reading project.json: ${JSON_ERROR}")
+  endif()
   if(THIRD_PARTY_LIBS_COUNT GREATER 0)
     math(EXPR LAST_INDEX "${THIRD_PARTY_LIBS_COUNT} - 1")
     foreach(INDEX RANGE 0 ${LAST_INDEX})
       # Get the library name from the project.json file
       # dependencies.third_party[N].name
-      string(JSON THIRD_PARTY_LIB GET "${PROJECT_JSON_CONTENT}" "dependencies" "third_party" ${INDEX} "name" ERROR_VARIABLE JSON_ERROR)
+      string(JSON THIRD_PARTY_LIB ERROR_VARIABLE JSON_ERROR GET "${PROJECT_JSON_CONTENT}" "dependencies" "third_party" ${INDEX} "name")
 
       if(JSON_ERROR)
         mystic_message(FATAL_ERROR "Error reading project.json: ${JSON_ERROR}")
