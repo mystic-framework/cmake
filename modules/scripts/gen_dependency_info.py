@@ -263,18 +263,26 @@ def generate_cmake_content(project_info: dict) -> str:
     # Process first-party modules
     cmake_content += "# --- First-party Dependencies ---\n"
     modules = dependencies.get("modules", [])
-    print(f"-- [MYSTIC] Found {len(modules)} first-party module(s) in project.json.")
-    for module in modules:
-        cmake_content += write_module_entry(module)
+    if len(modules) > 0:
+        print(
+            f"-- [MYSTIC] - Found {len(modules)} first-party module(s) in project.json."
+        )
+        for module in modules:
+            cmake_content += write_module_entry(module)
+    else:
+        cmake_content += "# No first-party modules specified.\n\n"
 
     # Process third-party dependencies
     cmake_content += "# --- Third-party Dependencies ---\n"
     third_party = dependencies.get("third_party", [])
-    print(
-        f"-- [MYSTIC] Found {len(third_party)} third-party dependency(ies) in project.json."
-    )
-    for entry in third_party:
-        cmake_content += write_third_party_entry(entry)
+    if len(third_party) > 0:
+        print(
+            f"-- [MYSTIC] - Found {len(third_party)} third-party dependency(ies) in project.json."
+        )
+        for entry in third_party:
+            cmake_content += write_third_party_entry(entry)
+    else:
+        cmake_content += "# No third-party dependencies specified.\n\n"
 
     return cmake_content
 
@@ -282,12 +290,12 @@ def generate_cmake_content(project_info: dict) -> str:
 if __name__ == "__main__":
     args = parse_args()
     try:
-        print("-- [MYSTIC] Processing dependencies from project.json...")
+        print("-- [MYSTIC] - Processing dependencies from project.json...")
         project_info = load_project_json(args.project_json)
         cmake_content = generate_cmake_content(project_info)
         with open(args.output_path, "w", encoding="utf-8") as f:
             f.write(cmake_content)
-        print("-- [MYSTIC] Successfully generated dependency information.")
+        print("-- [MYSTIC] - Successfully generated dependency information.")
     except (FileNotFoundError, OSError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
