@@ -39,6 +39,8 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/MysticMessage.cmake")
 
+set(_MYSTIC_CURRENT_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
 # This needs Compile Commands to work properly
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -205,10 +207,10 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
     add_custom_command(
       OUTPUT "${TIDY_DEPS_CMAKE}"
       COMMAND ${Python3_EXECUTABLE}
-              ${CMAKE_CURRENT_LIST_DIR}/scripts/gen_tidy_deps.py
+              ${_MYSTIC_CURRENT_DIR}/scripts/gen_tidy_deps.py
               ${SCAN_DEPS_JSON} ${TIDY_DEPS_CMAKE}
               --target ${TARGET_NAME}
-      DEPENDS "${SCAN_DEPS_JSON}" ${CMAKE_CURRENT_LIST_DIR}/scripts/gen_tidy_deps.py
+      DEPENDS "${SCAN_DEPS_JSON}" ${_MYSTIC_CURRENT_DIR}/scripts/gen_tidy_deps.py
       COMMENT "Generating tidy deps CMake file for target: ${TARGET_NAME}"
       VERBATIM
     )
