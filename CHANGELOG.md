@@ -2,6 +2,23 @@
 
 All the notable changes in the project `mystic-framework/cmake` will be documented here.
 
+## [1.2.1] - 2026-11-27
+
+### Added
+
+- Automatic third-party dependency options setup in `MysticSetupOptions`.
+- Automatic test framework detection in `MysticTest`.
+
+### Fixed
+
+- Logging inconsistencies in `MysticDependency`.
+- Major errors in `MysticLint.`
+
+### Removed
+
+- Duplicate addition of `project.json` to `CMAKE_CONFIGURE_DEPEND` in
+  `MysticDependeny` (`MysticProject` already adds it to that).
+
 ## [1.2.0] - 2026-11-26
 
 ### Added
