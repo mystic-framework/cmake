@@ -361,6 +361,7 @@ function(_mystic_lint_impl TARGET_NAME FORMAT_ARGS TIDY_ARGS DISABLE_FORMAT DISA
 
   if(CLANG_FORMAT_EXE)
     if(NOT DISABLE_FORMAT)
+      mystic_message(STATUS "Creating format target for: ${TARGET_NAME} with args: ${FORMAT_ARGS}")
       _mystic_create_format_target("${TARGET_NAME}" "${FORMAT_ARGS}")
     else()
       mystic_message(STATUS "Formatting is disabled for target: ${TARGET_NAME}. Skipping format target creation.")
@@ -369,6 +370,7 @@ function(_mystic_lint_impl TARGET_NAME FORMAT_ARGS TIDY_ARGS DISABLE_FORMAT DISA
 
   if(CLANG_TIDY_EXE)
     if(NOT DISABLE_TIDY)
+      mystic_message(STATUS "Creating lint target for: ${TARGET_NAME} with args: ${TIDY_ARGS}")
       _mystic_create_lint_target("${TARGET_NAME}" "${TIDY_ARGS}")
     else()
       mystic_message(STATUS "Linting is disabled for target: ${TARGET_NAME}. Skipping lint target creation.")
@@ -393,6 +395,7 @@ function(mystic_lint)
 
   # If linting is disabled, return early
   if(NOT ${PROJECT_PREFIX}_ENABLE_LINT)
+    mystic_message(STATUS "Linting is disabled for this project. Skipping lint setup.")
     return()
   endif()
 
