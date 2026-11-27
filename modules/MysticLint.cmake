@@ -178,7 +178,26 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
 
   # If clang-scan-deps is available, generate a P1689 scan for the target.
   # Otherwise, generate a mock scan to satisfy DEPENDS.
-  if(CLANG_SCAN_DEPS_EXE)
+  if(CLANG_SCAN_DEPS_EXE AND Python3_Interpreter_FOUND)
+    set(SCAN_COMPILE_COMMANDS_JSON
+      "${CMAKE_BINARY_DIR}/MysticScanCompileCommands_${TARGET_NAME}.json")
+    add_custom_command(
+      OUTPUT "${SCAN_DEPS_JSON}"
+      COMMAND ${Python3_EXECUTABLE}
+              ${_MYSTIC_CURRENT_DIR}/scripts/strip_modmaps.py
+              ${CMAKE_BINARY_DIR}/compile_commands.json
+              ${SCAN_COMPILE_COMMANDS_JSON}
+      COMMAND ${CLANG_SCAN_DEPS_EXE} -format=p1689
+              -compilation-database=${SCAN_COMPILE_COMMANDS_JSON}
+              > ${SCAN_DEPS_JSON}
+      DEPENDS ${ABS_FILES}
+              ${CMAKE_BINARY_DIR}/compile_commands.json
+              ${_MYSTIC_CURRENT_DIR}/scripts/strip_modmaps.py
+      BYPRODUCTS "${SCAN_COMPILE_COMMANDS_JSON}"
+      COMMENT "Generating P1689 scan for target: ${TARGET_NAME}"
+      VERBATIM
+    )
+  elseif(CLANG_SCAN_DEPS_EXE)
     add_custom_command(
       OUTPUT "${SCAN_DEPS_JSON}"
       COMMAND ${CLANG_SCAN_DEPS_EXE} -format=p1689
