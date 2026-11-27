@@ -174,7 +174,7 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
   endforeach()
 
   # Phase 1: Regenerate raw P1689 scans
-  set(SCAN_DEPS_JSON "${CMAKE_BINARY_DIR}/module_deps_${TARGET_NAME}.json")
+  set(SCAN_DEPS_JSON "${CMAKE_BINARY_DIR}/MysticModulesDeps_${TARGET_NAME}.json")
 
   # If clang-scan-deps is available, generate a P1689 scan for the target.
   # Otherwise, generate a mock scan to satisfy DEPENDS.
@@ -199,7 +199,7 @@ function(_mystic_create_lint_target TARGET_NAME TIDY_ARGS)
   endif()
 
   # Phase 2: Generate tidy deps CMake file
-  set(TIDY_DEPS_CMAKE "${CMAKE_BINARY_DIR}/tidy_deps_${TARGET_NAME}.cmake")
+  set(TIDY_DEPS_CMAKE "${CMAKE_BINARY_DIR}/MysticTidyDeps_${TARGET_NAME}.cmake")
 
   # If python3 is available, generate the tidy deps CMake file using the helper script.
   # Otherwise, generate a mock tidy deps CMake file to satisfy DEPENDS.
